@@ -1,5 +1,7 @@
-import { NextResponse } from 'next/server';
-import Replicate from 'replicate';
+import { NextResponse } from "next/server";
+import Replicate from "replicate";
+import dotenv from "dotenv";
+dotenv.config();
 
 const replicate = new Replicate({
   auth: process.env.REPLICATE_API_TOKEN,
@@ -19,27 +21,43 @@ const WEBHOOK_HOST = process.env.VERCEL_URL
 
 export async function POST(request) {
   if (!process.env.REPLICATE_API_TOKEN) {
-    throw new Error(
-      'The REPLICATE_API_TOKEN environment variable is not set. See README.md for instructions on how to set it.'
-    );
+    throw new Error("The environment variable is not set.");
   }
 
   const { prompt } = await request.json();
 
   const options = {
-    version: '8beff3369e81422112d93b89ca01426147de542cd4684c244b673b105188fe5f',
-    input: { prompt }
-  }
+    version: "8beff3369e81422112d93b89ca01426147de542cd4684c244b673b105188fe5f",
+    input: { prompt },
+  };
 
   if (WEBHOOK_HOST) {
-    options.webhook = `${WEBHOOK_HOST}/api/webhooks`
-    options.webhook_events_filter = ["start", "completed"]
+    options.webhook = `${WEBHOOK_HOST}/api/webhooks`;
+    options.webhook_events_filter = ["start", "completed"];
   }
 
-  const prediction = await replicate.predictions.create(options);
+  let prediction;
+  try {
+    prediction = await replicate.deployments.predictions.create(
+      "tylerbishopdev",
+      "remixshiba",
+      {
+        input: {
+          face: faceUrl,
+          input_audio: audioUrl,
+          audio_duration: parseInt(audioDuration),
+        },
+      }
+    );
 
-  if (prediction?.error) {
-    return NextResponse.json({ detail: prediction.error }, { status: 500 });
+    console.log("Using model: %s", "tylerbishopdev/remixshiba");
+    console.log("With input: %O", input);
+
+    console.log("Running...");
+    const output = await replicate.run("tylerbishopdev/remixshiba", { input });
+    console.log("Done!", output);
+  } catch (error) {
+    console.error("Error:", error);
   }
 
   return NextResponse.json(prediction, { status: 201 });

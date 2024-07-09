@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import Form from "./components/Form";
 import Image from "next/image";
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -16,6 +17,7 @@ export default function Home() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(null); // Clear any previous errors
     const response = await fetch("/api/predictions", {
       method: "POST",
       headers: {
@@ -43,7 +45,6 @@ export default function Home() {
         setError(prediction.detail);
         return;
       }
-      console.log({ prediction });
       setPrediction(prediction);
     }
   };
@@ -60,16 +61,15 @@ export default function Home() {
         </a>
       </h1>
 
-      <form
-        className="w-full flex w-2/3 mx-auto h-auto"
-        onSubmit={handleSubmit}
-      >
+      <form onSubmit={handleSubmit} className="mt-5">
         <input
-          type="text"
-          className="flex-grow"
-          name="prompt"
-          placeholder="Enter a prompt to display an image"
           ref={promptInputRef}
+          type="text"
+          name="prompt"
+          placeholder="Enter a prompt..."
+          className="input"
+          required
+          autoFocus
         />
         <button className="button" type="submit">
           Go!
@@ -91,6 +91,11 @@ export default function Home() {
             </div>
           )}
           <p className="py-3 text-sm opacity-50">status: {prediction.status}</p>
+          <Form>
+            <input faceUrl={prediction?.output?.[0]}>{faceUrl}</input>
+            audioUrl={e.target.audioUrl.value}
+            audioDuration={Number(e.target.audioDuration.value)}
+          </Form>
         </>
       )}
     </div>
