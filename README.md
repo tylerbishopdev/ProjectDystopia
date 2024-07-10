@@ -1,20 +1,3 @@
-## Getting started with Next.js and Replicate
-
-<img width="100%" alt="iguana" src="https://github.com/replicate/cog/assets/2289/1d8d005c-e4a1-4a9d-bd4c-b573fc121b37">
-
-This is a [Next.js](https://nextjs.org/) template project that's preconfigured to work with Replicate's API.
-
-It uses Next's newer [App Router](https://nextjs.org/docs/app) and [Server Components](https://nextjs.org/docs/app/building-your-application/rendering/server-components).
-
-You can use this as a quick jumping-off point to build a web app using Replicate's API, or you can recreate this codebase from scratch by following the guide at [replicate.com/docs/get-started/nextjs](https://replicate.com/docs/get-started/nextjs)
-
-## Noteworthy files
-
-- [app/page.js](app/page.js) - React frontend that renders the home page in the browser
-- [app/api/predictions/route.js](app/api/predictions/route.js) - API endpoint that calls Replicate's API to create a prediction
-- [app/api/predictions/[id]/route.js](app/api/predictions/[id]/route.js) - API endpoint that calls Replicate's API to get the prediction result
-- [app/api/webhooks/route.js](app/api/webhooks/route.js) - API endpoint that receives and validates webhooks from Replicate
-
 ## Running the app
 
 Install dependencies:
@@ -29,13 +12,32 @@ Create a git-ignored text file for storing secrets like your API token:
 cp .env.example .env.local
 ```
 
-Add your [Replicate API token](https://replicate.com/account/api-tokens) to `.env.local`:
+Add the local .env and setup the [Replicate API token](https://replicate.com/account/api-tokens) to `.env.local` if running on Vercel:
 
 ```
-REPLICATE_API_TOKEN=<your-token-here>
+REPLICATE_API_TOKEN=<token-here>
 ```
 
-Run the development server:
+## NGROk to run locally over https:
+
+1. Download and install ngrok from https://ngrok.com/download. Or, if using Mac cli and run:
+
+```console
+brew install ngrok
+```
+
+2. Sign up for an account if you don't have one.
+3. After installation, open a terminal and run the command ngrok http 3000. This command creates a secure tunnel to your local machine on port 3000.
+4. ngrok will provide you with a URL that looks something like https://<random-string>.ngrok.io. This is your ngrok host.
+5. In your project's .env.local file, add the ngrok host to the NGROK_HOST variable. It should look something like this: NGROK_HOST=https://<random-string>.ngrok.io.
+
+### Run the development server:
+
+Start ngrok:
+
+```console
+ngrok http 3000
+```
 
 ```console
 npm run dev
